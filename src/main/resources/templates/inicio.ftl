@@ -15,29 +15,6 @@
 
     <!-- Custom styles for this template -->
     <link href="css/dashboard.css" rel="stylesheet">
-    <style type="text/css">/* Chart.js */
-        @-webkit-keyframes chartjs-render-animation {
-            from {
-                opacity: 0.99
-            }
-            to {
-                opacity: 1
-            }
-        }
-
-        @keyframes chartjs-render-animation {
-            from {
-                opacity: 0.99
-            }
-            to {
-                opacity: 1
-            }
-        }
-
-        .chartjs-render-monitor {
-            -webkit-animation: chartjs-render-animation 0.001s;
-            animation: chartjs-render-animation 0.001s;
-        }</style>
 </head>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
@@ -73,7 +50,8 @@
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#" style="">Kindle Dominicano</a>
 
-    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+    <input class="form-control form-control-dark w-100" id="buscar" type="text" placeholder="Search"
+           aria-label="Search">
 
 
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
@@ -275,7 +253,7 @@
                 <div class="row">
                     <div class="col-2">
                         <img src="http://2.bp.blogspot.com/_JXi92wDCOGk/TGF1W98DwWI/AAAAAAAABqI/jmXaiB8h0nE/s1600/Alice+book+cover2.jpg"
-                             width="120" height="184" class="card-img-top"  alt="...">
+                             width="120" height="184" class="card-img-top" alt="...">
                     </div>
                     <div class="col-10">
 
@@ -289,7 +267,7 @@
                                 ni comerás pasteles tan curiosos. Así que... ¡abre el libro y sumérgete en el país de
                                 tus sueños!</p>
                             <p class="card-text">
-                                <#--<small class="text-muted">Last updated 3 mins ago</small>-->
+                            <#--<small class="text-muted">Last updated 3 mins ago</small>-->
                             </p>
                             <a href="#" class="btn btn-primary"><i class="fab fa-readme"></i> Leer</a>
 
@@ -297,7 +275,8 @@
                         <div class="d-flex align-items-end">
 
                             <div class="card-body">
-                                <footer class="blockquote-footer">Autor: <cite title="Source Title" class="btn-link">Lewis Carroll</cite>
+                                <footer class="blockquote-footer">Autor: <cite title="Source Title" class="btn-link">Lewis
+                                    Carroll</cite>
 
                                 </footer>
                             </div>
@@ -316,12 +295,10 @@
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+<script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
-<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
-
-<#--<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>-->
 <script src="js/bootstrap.min.js"></script>
 
 <!-- Icons -->
@@ -330,40 +307,34 @@
     feather.replace()
 </script>
 
-<!-- Graphs -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
 <script>
+    $(document).ready(function () {
+        temporizador = 0;
 
+        $("#buscar").on('change', function (e) {
+            var palabraClave = document.getElementById("buscar").value;
+            console.log(palabraClave);
+            sacarLibro(palabraClave);
+        });
+    })
 
-    var ctx = document.getElementById("myChart");
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            datasets: [{
-                data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
-                lineTension: 0,
-                backgroundColor: 'transparent',
-                borderColor: '#007bff',
-                borderWidth: 4,
-                pointBackgroundColor: '#007bff'
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: false
-                    }
-                }]
-            },
-            legend: {
-                display: false
+    function sacarLibro(busqueda) {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "https://www.googleapis.com/books/v1/volumes?q=" + busqueda,
+            success: function (valor) {
+                console.log(valor);
+                valor.items.forEach(function (item) {
+                    console.log(item.volumeInfo.title, item.volumeInfo.authors, item.volumeInfo.description, item.volumeInfo.publishedDate, item.volumeInfo.imageLinks[1]);
+
+                })
+
             }
-        }
-    });
-</script>
+        });
 
+    }
+</script>
 
 </body>
 </html>
