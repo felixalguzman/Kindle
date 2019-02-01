@@ -248,43 +248,7 @@
                 </div>
             </div>
 
-            <div class="card">
-
-                <div class="row">
-                    <div class="col-2">
-                        <img src="http://2.bp.blogspot.com/_JXi92wDCOGk/TGF1W98DwWI/AAAAAAAABqI/jmXaiB8h0nE/s1600/Alice+book+cover2.jpg"
-                             width="120" height="184" class="card-img-top" alt="...">
-                    </div>
-                    <div class="col-10">
-
-                        <div class="card-body">
-                            <h5 class="card-title">Alicia en el país de las maravillas</h5>
-                            <p class="card-text descripcion">Lewis Carroll nos seduce con Alicia en el País de las
-                                Maravillas. Deslízate con Alicia por la madriguera del Conejo y te sorprenderás con un
-                                sinfín de aventuras mágicas en el fantástico mundo del País de las Maravillas. Aquí los
-                                conejos hablan y juegan a las cartas andantes, y los gatos tienen la habilidad de
-                                desaparecer a su voluntad. Nunca conocerás a personajes más desconcertantes que éstos,
-                                ni comerás pasteles tan curiosos. Así que... ¡abre el libro y sumérgete en el país de
-                                tus sueños!</p>
-                            <p class="card-text">
-                            <#--<small class="text-muted">Last updated 3 mins ago</small>-->
-                            </p>
-                            <a href="#" class="btn btn-primary"><i class="fab fa-readme"></i> Leer</a>
-
-                        </div>
-                        <div class="d-flex align-items-end">
-
-                            <div class="card-body">
-                                <footer class="blockquote-footer">Autor: <cite title="Source Title" class="btn-link">Lewis
-                                    Carroll</cite>
-
-                                </footer>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <div id="libros"></div>
 
             <h2>Section title</h2>
 
@@ -326,9 +290,31 @@
             success: function (valor) {
                 console.log(valor);
                 valor.items.forEach(function (item) {
-                    console.log(item.volumeInfo.title, item.volumeInfo.authors, item.volumeInfo.description, item.volumeInfo.publishedDate, item.volumeInfo.imageLinks[1]);
+                    var descripcion = item.volumeInfo.description === undefined ? "No tiene descripción." : item.volumeInfo.description
+                    document.getElementById("libros").innerHTML +=
+                    "<div class='card mb-2'>\n" +
+                        "<div class='row'>\n" +
+                            "<div class='col-2'>\n" +
+                                "<img src=" + item.volumeInfo.imageLinks.thumbnail + " + width='120' height='184' class='card-img-top' alt='libroX'> " +
+                            "</div>\n" +
+                            "<div class='col-10'>\n" +
+                                "<div class='card-body'>\n" +
+                                    "<h5 class='card-title'>" + item.volumeInfo.title + "</h5>"+
+                                    "<p class='card-text descripcion'>" + descripcion + "</p>\n" +
+                                    "<p class='card-text'>" + "<b>Fecha de publicación: </b>" + item.volumeInfo.publishedDate + "</p>\n" +
+                                    "<a href=\"#\" class=\"btn btn-primary\"><i class=\"fab fa-readme\"></i> Leer</a>\n\n" +
+                                "</div>\n" +
+                            "</div>" +
 
-                })
+                            "<div class=\"d-flex align-items-end\">\n\n" +
+                                "<div class=\"card-body\">\n" +
+                                    "<footer class=\"blockquote-footer\">Autor: <cite title='Source Title' class='btn-link'>" + item.volumeInfo.authors[0] + "</cite>\n" +
+                                    "</footer>\n" +
+                                "</div>\n" +
+                           "</div>" +
+                         "</div>\n" +
+                        "</div>" ;
+                });
 
             }
         });
