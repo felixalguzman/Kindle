@@ -308,8 +308,7 @@
 
                             "<div class=\"d-flex align-items-end\">\n\n" +
                                 "<div class=\"card-body\">\n" +
-                                    "<footer class=\"blockquote-footer\">Autor: <cite title='Source Title' class='btn-link'>" + item.volumeInfo.authors[0] + "</cite>\n" +
-                                    "</footer>\n" +
+                                    "<button class='btn btn-link' onclick='sacarLibro(" + item.volumeInfo.authors[0].toString() + ")'>" + "<span style='color: grey; text-decoration: none'>Autor: </span>" + item.volumeInfo.authors[0] + "</button>" +
                                 "</div>\n" +
                            "</div>" +
                          "</div>\n" +
