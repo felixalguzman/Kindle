@@ -71,6 +71,8 @@
 </nav>
 
 <div class="container-fluid">
+
+
     <div class="row">
         <nav class="col-md-2 d-none d-md-block bg-light sidebar">
             <div class="sidebar-sticky">
@@ -104,23 +106,28 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
 
+            <div id="vista" style="display: none" class="alert alert-primary alert-dismissible fade show" role="alert">
+                <strong id="nombreNotificacion">Nombre del libro</strong>
+                <div id="descripcionNotificacion"> ha sido guardado.</div>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
 
             <div class="d-flex justify-content-start flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                 <div class="p-2 flex-grow-1 bd-highlight">
                     <h1 class="h2" id="titulo">Resultados de la b&uacute;squeda</h1>
                 </div>
 
-                <div class="">
-
+                <div id="botones">
 
                     <button class="btn btn-sm btn-primary" onclick="cambiarModo(0)">
                         <i class="far fa-window-maximize"></i> Cambiar a carta
                     </button>
 
-                </div>
-                &nbsp;
 
-                <div>
+                    &nbsp;
+
                     <button class="btn btn-sm btn-primary" onclick="cambiarModo(1)">
                         <i class="fas fa-table"></i> Cambiar a tabla
                     </button>
@@ -168,25 +175,47 @@
             busqueda();
         });
 
-        $("#mislibros").on('click', function(){
+        $("#mislibros").on('click', function () {
             document.getElementById("inicio").classList.remove("active");
             document.getElementById("mislibros").classList.add("active");
+
+            limpiarTodo();
+            mostrarLibrosRentados();
+            document.getElementById("titulo").innerHTML = "Mis libros";
+            document.getElementById("botones").style.display = "none";
+
+
         });
 
-        $("#inicio").on('click', function(){
+        $("#inicio").on('click', function () {
             document.getElementById("inicio").classList.add("active");
             document.getElementById("mislibros").classList.remove("active");
+
+            limpiarTodo();
+            document.getElementById("titulo").innerHTML = "Resultados de la búsqueda";
+            document.getElementById("botones").style.display = "block";
+
         });
     });
 
     function rentarLibro(busqueda) {
+
+        console.log(busqueda + " id libro");
         $.ajax({
             type: "GET",
             dataType: "json",
             url: "https://www.googleapis.com/books/v1/volumes?q=" + busqueda,
             success: function (valor) {
-               valor.items.forEach(function (item) {
-                    librosRentados.push([item.volumeInfo.title, item.volumeInfo.description, item.volumeInfo.imageLinks.thumbnail, item.volumeInfo.publishedDate, item.volumeInfo.authors]);
+                valor.items.forEach(function (item) {
+                    librosRentados.push({
+                        id: item.id,
+                        titulo: item.volumeInfo.title,
+                        descripcion: item.volumeInfo.description,
+                        foto: item.volumeInfo.imageLinks.thumbnail,
+                        fecha: item.volumeInfo.publishedDate,
+                        autores: item.volumeInfo.authors
+                    });
+                    console.log(librosRentados);
                 });
             }
         });
@@ -207,8 +236,7 @@
         document.getElementById("buscar").value = palabraClave;
 
         console.log(palabraClave);
-        $("#tabla").empty();
-        $("#libros").empty();
+        limpiarTodo();
 
         if (modo === 0) {
 
@@ -231,11 +259,11 @@
             success: function (valor) {
                 valor.items.forEach(function (item) {
                     var descripcion = item.volumeInfo.description === undefined ? "No tiene descripción." : item.volumeInfo.description;
+                    var titulo = item.volumeInfo.title.toString();
                     console.log(valor);
                     document.getElementById("libros").innerHTML +=
                         "<div class='card mb-2'>" +
                         "<div class='row'>\n" +
-
                         "<div class='col-2'>\n" +
                         "<img src=" + item.volumeInfo.imageLinks.thumbnail + "  width='120' height='184' class='card-img-top' alt='libroX'> " +
                         "</div>\n" +
@@ -244,7 +272,8 @@
                         "<h5 class='card-title'>" + item.volumeInfo.title + "</h5>" +
                         "<p class='card-text descripcion'>" + descripcion + "</p>\n" +
                         "<p class='card-text'>" + "<b>Fecha de publicación: </b>" + item.volumeInfo.publishedDate + "</p>\n" +
-                        "<a href=\"#\" class=\"btn btn-primary\" id='"+item.id+"' onclick='rentarLibro(this.id)'><i class=\"fab fa-get-pocket\"></i>  Rentar</a>\n\n" +
+                        "<a href=\"#\" class=\"btn btn-primary\" id='" + item.id + "' onclick='rentarLibro(this.id);NotificarRentaLibro(\""+ item.volumeInfo.title+"\");'><i class=\"fab fa-get-pocket\"></i>  Rentar</a>\n\n" +
+
                         "</div>" +
 
                         "<div class=\"d-flex align-items-end\">\n\n" +
@@ -272,6 +301,42 @@
 
         console.log(a.text + " a link");
         buscar(a.text);
+    }
+
+    function mostrarLibrosRentados() {
+
+        librosRentados.forEach(function (item) {
+            var descripcion = item.descripcion === undefined ? "No tiene descripción." : item.descripcion;
+            // console.log(valor);
+            document.getElementById("libros").innerHTML +=
+                "<div class='card mb-2'>" +
+                "<div class='row'>\n" +
+
+                "<div class='col-2'>\n" +
+                "<img src=" + item.foto + "  width='120' height='184' class='card-img-top' alt='libroX'> " +
+                "</div>\n" +
+                "<div class='col-10'>\n" +
+                "<div class='card-body'>\n" +
+                "<h5 class='card-title'>" + item.titulo + "</h5>" +
+                "<p class='card-text descripcion'>" + descripcion + "</p>\n" +
+                "<p class='card-text'>" + "<b>Fecha de publicación: </b>" + item.fecha + "</p>\n" +
+                "<a href=\"#\" class=\"btn btn-primary\" id='" + item.id + "' onclick='rentarLibro(this.id)'><i class=\"fab fa-get-pocket\"></i>  Rentar</a>\n\n" +
+                "</div>" +
+
+                "<div class=\"d-flex align-items-end\">\n\n" +
+                "<div class=\"card-body\">\n" +
+                "<footer class='blockquote-footer'>Autor: <cite title='Source Title' >" + item.autores.map(function (value) {
+                    console.log(value);
+                    return "<a class='btn-link' href='#' style='font-size: medium' onclick='probar(this);return false '>" + value + "</a>"
+                }).join(', ') + "</cite>" +
+                "</footer>" +
+                "</div>\n" +
+                "</div>" +
+                "</div>" +
+                "</div>";
+
+
+        });
     }
 
     function sacarLibroTabla(busqueda) {
@@ -332,6 +397,30 @@
 
             busqueda();
         }
+    }
+
+    function limpiarTodo() {
+        $("#tabla").empty();
+        $("#libros").empty();
+    }
+
+    function NotificarRentaLibro(nombre) {
+
+        console.log("nombre libro notificacion: " + nombre);
+
+        if (document.getElementById("vista").style.display === "none") {
+
+            document.getElementById("vista").style.display = "block";
+            document.getElementById("nombreNotificacion").innerHTML = nombre;
+
+        }
+
+        setTimeout(function () {
+
+
+            document.getElementById("vista").style.display = "none";
+        }, 2000);
+
     }
 </script>
 
