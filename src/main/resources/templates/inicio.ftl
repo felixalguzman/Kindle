@@ -228,7 +228,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                <h1 class="h2">Dashboard</h1>
+                <h1 class="h2" id="titulo" hidden>Resultados de la b&uacute;squeda</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
                         <button class="btn btn-sm btn-outline-secondary">Share</button>
@@ -250,7 +250,6 @@
 
             <div id="libros"></div>
 
-            <h2>Section title</h2>
 
         </main>
     </div>
@@ -273,14 +272,15 @@
 
 <script>
     $(document).ready(function () {
-        temporizador = 0;
+
 
         $("#buscar").on('change', function (e) {
             var palabraClave = document.getElementById("buscar").value;
+            $("#libros").empty();
             console.log(palabraClave);
             sacarLibro(palabraClave);
         });
-    })
+    });
 
     function sacarLibro(busqueda) {
         $.ajax({
@@ -288,31 +288,36 @@
             dataType: "json",
             url: "https://www.googleapis.com/books/v1/volumes?q=" + busqueda,
             success: function (valor) {
-                console.log(valor);
                 valor.items.forEach(function (item) {
-                    var descripcion = item.volumeInfo.description === undefined ? "No tiene descripción." : item.volumeInfo.description
+                    var descripcion = item.volumeInfo.description === undefined ? "No tiene descripción." : item.volumeInfo.description;
+                    console.log(valor);
                     document.getElementById("libros").innerHTML +=
-                    "<div class='card mb-2'>\n" +
+                        "<div class='card mb-2'>" +
                         "<div class='row'>\n" +
-                            "<div class='col-2'>\n" +
-                                "<img src=" + item.volumeInfo.imageLinks.thumbnail + " + width='120' height='184' class='card-img-top' alt='libroX'> " +
-                            "</div>\n" +
-                            "<div class='col-10'>\n" +
-                                "<div class='card-body'>\n" +
-                                    "<h5 class='card-title'>" + item.volumeInfo.title + "</h5>"+
-                                    "<p class='card-text descripcion'>" + descripcion + "</p>\n" +
-                                    "<p class='card-text'>" + "<b>Fecha de publicación: </b>" + item.volumeInfo.publishedDate + "</p>\n" +
-                                    "<a href=\"#\" class=\"btn btn-primary\"><i class=\"fab fa-readme\"></i> Leer</a>\n\n" +
-                                "</div>\n" +
-                            "</div>" +
 
-                            "<div class=\"d-flex align-items-end\">\n\n" +
-                                "<div class=\"card-body\">\n" +
-                                    "<button class='btn btn-link' onclick='sacarLibro(" + item.volumeInfo.authors[0].toString() + ")'>" + "<span style='color: grey; text-decoration: none'>Autor: </span>" + item.volumeInfo.authors[0] + "</button>" +
-                                "</div>\n" +
-                           "</div>" +
-                         "</div>\n" +
-                        "</div>" ;
+                        "<div class='col-2'>\n" +
+                        "<img src=" + item.volumeInfo.imageLinks.thumbnail + " + width='120' height='184' class='card-img-top' alt='libroX'> " +
+                        "</div>\n" +
+                        "<div class='col-10'>\n" +
+                        "<div class='card-body'>\n" +
+                        "<h5 class='card-title'>" + item.volumeInfo.title + "</h5>" +
+                        "<p class='card-text descripcion'>" + descripcion + "</p>\n" +
+                        "<p class='card-text'>" + "<b>Fecha de publicación: </b>" + item.volumeInfo.publishedDate + "</p>\n" +
+                        "<a href=\"#\" class=\"btn btn-primary\"><i class=\"fab fa-readme\"></i> Leer</a>\n\n" +
+                        "</div>" +
+
+                        "<div class=\"d-flex align-items-end\">\n\n" +
+                        "<div class=\"card-body\">\n" +
+                        "<footer class='blockquote-footer'>Autor: <cite title='Source Title' >" + item.volumeInfo.authors.map(function (value) {
+                            return "<a class='btn btn-link'>" + value + "</a>"
+                        }).join(', ') + "</cite>" +
+                        "</footer>" +
+                        "</div>\n" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>";
+
+
                 });
 
             }
