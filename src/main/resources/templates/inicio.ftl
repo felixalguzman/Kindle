@@ -15,6 +15,11 @@
 
     <!-- Custom styles for this template -->
     <link href="css/dashboard.css" rel="stylesheet">
+
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
@@ -217,28 +222,43 @@
         </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <div class="chartjs-size-monitor"
-                 style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;">
-                <div class="chartjs-size-monitor-expand"
-                     style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
-                    <div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div>
-                </div>
-                <div class="chartjs-size-monitor-shrink"
-                     style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
-                    <div style="position:absolute;width:200%;height:200%;left:0; top:0"></div>
-                </div>
-            </div>
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                <h1 class="h2" id="titulo">Resultados de la b&uacute;squeda</h1>
 
+            <div class="col">
+
+                <div class="d-flex justify-content-start flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                    <h1 class="h2" id="titulo">Resultados de la b&uacute;squeda</h1>
+                </div>
             </div>
+
+            <div class="col">
+
+                <div class="d-flex justify-content-end flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+
+
+                    <button class="btn btn-sm btn-primary" onclick="cambiarModo(0)">
+                        <i class="far fa-window-maximize"></i> Cambiar a carta
+                    </button>
+
+                    &nbsp;
+
+                    <button class="btn btn-sm btn-primary" onclick="cambiarModo(1)">
+                        <i class="fas fa-table"></i> Cambiar a tabla
+                    </button>
+
+                </div>
+            </div>
+
 
             <div id="libros"></div>
 
+            <div id="tabla">
 
-        </main>
+            </div>
+
     </div>
+
 </div>
+
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
@@ -256,29 +276,49 @@
 </script>
 
 <script>
+
+    var modo = 0;
+
     $(document).ready(function () {
 
         document.getElementById("titulo").style.visibility = "hidden";
 
         $("#buscar").on('change', function () {
-            document.getElementById("titulo").style.visibility = "visible";
-            var palabraClave = document.getElementById("buscar").value;
-            if (palabraClave === "") {
-                document.getElementById("titulo").style.visibility = "hidden";
 
-            }
-
-            buscar(palabraClave);
+            busqueda();
 
         });
     });
 
+    function busqueda() {
+        document.getElementById("titulo").style.visibility = "visible";
+        var palabraClave = document.getElementById("buscar").value;
+        if (palabraClave === "") {
+            document.getElementById("titulo").style.visibility = "hidden";
+        }
+
+
+        buscar(palabraClave);
+    }
+
     function buscar(palabraClave) {
         document.getElementById("buscar").value = palabraClave;
 
-        $("#libros").empty();
         console.log(palabraClave);
-        sacarLibro(palabraClave);
+        $("#tabla").empty();
+        $("#libros").empty();
+
+        if (modo === 0) {
+
+
+            console.log(modo + " carta");
+            sacarLibro(palabraClave);
+
+        } else if (modo === 1) {
+
+            console.log(modo + " tabla");
+            sacarLibroTabla(palabraClave);
+        }
     }
 
     function sacarLibro(busqueda) {
@@ -330,6 +370,66 @@
 
         console.log(a.text + " a link");
         buscar(a.text);
+    }
+
+    function sacarLibroTabla(busqueda) {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "https://www.googleapis.com/books/v1/volumes?q=" + busqueda,
+            success: function (valor) {
+
+                document.getElementById("tabla").innerHTML +=
+                    "<div class='table-responsive'>" +
+                    "<table class='table table-striped'>" +
+                    "<thead>" +
+                    "<tr>" +
+                    "<th>Título</th>" +
+                    "<th>Imagen</th>" +
+                    "<th>Descripción</th>" +
+                    "<th>Fecha de publicación</th>" +
+                    "<th>Autores</th>" +
+                    "</tr>" +
+                    "</thead>" +
+                    "<tbody id='tablalibro'>" +
+
+                    "</tbody>" +
+                    "</table>" +
+
+                    "</div>";
+
+                valor.items.forEach(function (item) {
+                    var descripcion = item.volumeInfo.description === undefined ? "No tiene descripción." : item.volumeInfo.description;
+                    if (item.volumeInfo.description === undefined) {
+                        descripcion = "No tiene descripción";
+                    } else {
+                        descripcion = descripcion.substr(0, 150) + "...";
+                    }
+                    document.getElementById("tablalibro").innerHTML +=
+                        "<tr>" +
+                        "<td>" + item.volumeInfo.title + "</td>" +
+                        "<td>" + "<img src=" + item.volumeInfo.imageLinks.thumbnail + "  width='48'  class='card-img-top' alt='libroX'> </td>" +
+                        "<td>" + descripcion + "</td>" +
+                        "<td>" + item.volumeInfo.publishedDate + "</td>" +
+                        "<td>" + item.volumeInfo.authors.map(function (value) {
+                            return "<a class='btn-link' href='#' style='font-size: medium' onclick='probar(this);return false '>" + value + "</a>"
+                        }).join(', ') + "</tr>";
+
+                })
+
+            }
+        })
+    }
+
+    function cambiarModo(valor) {
+
+        modo = valor;
+
+        var texto = document.getElementById("buscar").value;
+        if (texto !== "") {
+
+            busqueda();
+        }
     }
 </script>
 
