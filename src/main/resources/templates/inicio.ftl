@@ -15,6 +15,11 @@
 
     <!-- Custom styles for this template -->
     <link href="css/dashboard.css" rel="stylesheet">
+    \
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
@@ -229,30 +234,34 @@
             </div>
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                 <h1 class="h2" id="titulo" hidden>Resultados de la b&uacute;squeda</h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group mr-2">
-                        <button class="btn btn-sm btn-outline-secondary">Share</button>
-                        <button class="btn btn-sm btn-outline-secondary">Export</button>
-                    </div>
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                             class="feather feather-calendar">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                        This week
-                    </button>
-                </div>
+                <button class="btn btn-sm btn-primary" onclick="sacarLibroTabla()">
+                    <i class="fas fa-table"></i> Cambiar a tablas
+                </button>
             </div>
-
-            <div id="libros"></div>
-
-
-        </main>
     </div>
+
+    <div id="libros"></div>
+    <div class="col">
+
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Titulo</th>
+                <th scope="col">Descripcion</th>
+                <th scope="col">Fecha de publicación</th>
+                <th scope="col">Autores</th>
+            </tr>
+            </thead>
+            <tbody id="tablalibro">
+
+            </tbody>
+        </table>
+
+    </div>
+    </main>
+</div>
 </div>
 
 <!-- Bootstrap core JavaScript
@@ -292,37 +301,64 @@
                     var descripcion = item.volumeInfo.description === undefined ? "No tiene descripción." : item.volumeInfo.description;
                     console.log(valor);
                     document.getElementById("libros").innerHTML +=
-                        "<div class='card mb-2'>" +
-                        "<div class='row'>\n" +
+                            "<div class='card mb-2'>" +
+                            "<div class='row'>\n" +
 
-                        "<div class='col-2'>\n" +
-                        "<img src=" + item.volumeInfo.imageLinks.thumbnail + " + width='120' height='184' class='card-img-top' alt='libroX'> " +
-                        "</div>\n" +
-                        "<div class='col-10'>\n" +
-                        "<div class='card-body'>\n" +
-                        "<h5 class='card-title'>" + item.volumeInfo.title + "</h5>" +
-                        "<p class='card-text descripcion'>" + descripcion + "</p>\n" +
-                        "<p class='card-text'>" + "<b>Fecha de publicación: </b>" + item.volumeInfo.publishedDate + "</p>\n" +
-                        "<a href=\"#\" class=\"btn btn-primary\"><i class=\"fab fa-readme\"></i> Leer</a>\n\n" +
-                        "</div>" +
+                            "<div class='col-2'>\n" +
+                            "<img src=" + item.volumeInfo.imageLinks.thumbnail + " + width='120' height='184' class='card-img-top' alt='libroX'> " +
+                            "</div>\n" +
+                            "<div class='col-10'>\n" +
+                            "<div class='card-body'>\n" +
+                            "<h5 class='card-title'>" + item.volumeInfo.title + "</h5>" +
+                            "<p class='card-text descripcion'>" + descripcion + "</p>\n" +
+                            "<p class='card-text'>" + "<b>Fecha de publicación: </b>" + item.volumeInfo.publishedDate + "</p>\n" +
+                            "<a href=\"#\" class=\"btn btn-primary\"><i class=\"fab fa-readme\"></i> Leer</a>\n\n" +
+                            "</div>" +
 
-                        "<div class=\"d-flex align-items-end\">\n\n" +
-                        "<div class=\"card-body\">\n" +
-                        "<footer class='blockquote-footer'>Autor: <cite title='Source Title' >" + item.volumeInfo.authors.map(function (value) {
-                            return "<a class='btn btn-link'>" + value + "</a>"
-                        }).join(', ') + "</cite>" +
-                        "</footer>" +
-                        "</div>\n" +
-                        "</div>" +
-                        "</div>" +
-                        "</div>";
+                            "<div class=\"d-flex align-items-end\">\n\n" +
+                            "<div class=\"card-body\">\n" +
+                            "<footer class='blockquote-footer'>Autor: <cite title='Source Title' >" + item.volumeInfo.authors.map(function (value) {
+                                return "<a class='btn btn-link'>" + value + "</a>"
+                            }).join(', ') + "</cite>" +
+                            "</footer>" +
+                            "</div>\n" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>";
 
 
                 });
 
             }
         });
+    }
 
+    function sacarLibroTabla() {
+        var busqueda = document.getElementById("buscar").value;
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "https://www.googleapis.com/books/v1/volumes?q=" + busqueda,
+            success: function (valor) {
+                valor.items.forEach(function (item) {
+                    var descripcion = item.volumeInfo.description === undefined ? "No tiene descripción." : item.volumeInfo.description;
+                    if(item.volumeInfo.description === undefined){
+                        descripcion = "No tiene descripción";
+                    } else{
+                        descripcion = descripcion.substr(0, 70) + "...";
+                    }
+                    document.getElementById("tablalibro").innerHTML +=
+                            "<tr>" +
+                            "<td>" + item.volumeInfo.title + "</td>" +
+                            "<td>" + descripcion + "</td>" +
+                            "<td>" + item.volumeInfo.publishedDate + "</td>" +
+                            "<td>" + item.volumeInfo.authors.map(function (value) {
+                                return "<a class='btn btn-link'>" + value + "</a></td>" +
+                             "</tr>";
+                            })
+                })
+            }
+        })
     }
 </script>
 
