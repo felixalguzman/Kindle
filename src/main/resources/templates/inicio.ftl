@@ -223,28 +223,31 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
 
-            <div class="col">
+            <div class="row">
 
-                <div class="d-flex justify-content-start flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                    <h1 class="h2" id="titulo">Resultados de la b&uacute;squeda</h1>
+                <div class="col">
+
+                    <div class="d-flex justify-content-start flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                        <h1 class="h2" id="titulo">Resultados de la b&uacute;squeda</h1>
+                    </div>
                 </div>
-            </div>
-
-            <div class="col">
-
-                <div class="d-flex justify-content-end flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                <div class="col">
 
 
-                    <button class="btn btn-sm btn-primary" onclick="cambiarModo(0)">
-                        <i class="far fa-window-maximize"></i> Cambiar a carta
-                    </button>
+                    <div class="d-flex justify-content-end flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
 
-                    &nbsp;
 
-                    <button class="btn btn-sm btn-primary" onclick="cambiarModo(1)">
-                        <i class="fas fa-table"></i> Cambiar a tabla
-                    </button>
+                        <button class="btn btn-sm btn-primary" onclick="cambiarModo(0)">
+                            <i class="far fa-window-maximize"></i> Cambiar a carta
+                        </button>
 
+                        &nbsp;
+
+                        <button class="btn btn-sm btn-primary" onclick="cambiarModo(1)">
+                            <i class="fas fa-table"></i> Cambiar a tabla
+                        </button>
+
+                    </div>
                 </div>
             </div>
 
