@@ -48,9 +48,10 @@
     </div>
 </div>
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#" style="">Kindle Dominicano</a>
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/" style="">Kindle Dominicano</a>
 
-    <input class="form-control form-control-dark w-100" id="buscar" type="text" placeholder="Search"
+    <input class="form-control form-control-dark w-100" id="buscar" type="text"
+           placeholder="Buscar libros por Título, Autor"
            aria-label="Search">
 
 
@@ -228,24 +229,8 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                <h1 class="h2" id="titulo" hidden>Resultados de la b&uacute;squeda</h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <div class="btn-group mr-2">
-                        <button class="btn btn-sm btn-outline-secondary">Share</button>
-                        <button class="btn btn-sm btn-outline-secondary">Export</button>
-                    </div>
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                             class="feather feather-calendar">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                        This week
-                    </button>
-                </div>
+                <h1 class="h2" id="titulo">Resultados de la b&uacute;squeda</h1>
+
             </div>
 
             <div id="libros"></div>
@@ -273,14 +258,28 @@
 <script>
     $(document).ready(function () {
 
+        document.getElementById("titulo").style.visibility = "hidden";
 
-        $("#buscar").on('change', function (e) {
+        $("#buscar").on('change', function () {
+            document.getElementById("titulo").style.visibility = "visible";
             var palabraClave = document.getElementById("buscar").value;
-            $("#libros").empty();
-            console.log(palabraClave);
-            sacarLibro(palabraClave);
+            if (palabraClave === "") {
+                document.getElementById("titulo").style.visibility = "hidden";
+
+            }
+
+            buscar(palabraClave);
+
         });
     });
+
+    function buscar(palabraClave) {
+        document.getElementById("buscar").value = palabraClave;
+
+        $("#libros").empty();
+        console.log(palabraClave);
+        sacarLibro(palabraClave);
+    }
 
     function sacarLibro(busqueda) {
         $.ajax({
@@ -296,7 +295,7 @@
                         "<div class='row'>\n" +
 
                         "<div class='col-2'>\n" +
-                        "<img src=" + item.volumeInfo.imageLinks.thumbnail + " + width='120' height='184' class='card-img-top' alt='libroX'> " +
+                        "<img src=" + item.volumeInfo.imageLinks.thumbnail + "  width='120' height='184' class='card-img-top' alt='libroX'> " +
                         "</div>\n" +
                         "<div class='col-10'>\n" +
                         "<div class='card-body'>\n" +
@@ -309,7 +308,8 @@
                         "<div class=\"d-flex align-items-end\">\n\n" +
                         "<div class=\"card-body\">\n" +
                         "<footer class='blockquote-footer'>Autor: <cite title='Source Title' >" + item.volumeInfo.authors.map(function (value) {
-                            return "<a class='btn btn-link'>" + value + "</a>"
+                            console.log(value);
+                            return "<a class='btn-link' href='#' style='font-size: medium' onclick='probar(this);return false '>" + value + "</a>"
                         }).join(', ') + "</cite>" +
                         "</footer>" +
                         "</div>\n" +
@@ -323,6 +323,13 @@
             }
         });
 
+
+    }
+
+    function probar(a) {
+
+        console.log(a.text + " a link");
+        buscar(a.text);
     }
 </script>
 
